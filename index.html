@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Hi+Melody&display=swap" rel="stylesheet">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        body {
+            text-align: center;
+            font-family: 'Hi Melody', cursive;
+            margin: 0;
+            padding: 0;
+        }
+
+        .list {
+            border: 3px solid #F2BD1D;
+            border-radius: 20px;
+            overflow: hidden;
+            clear: both;
+            padding : 1px;
+            margin-bottom: 10px;
+            margin-left: 10px;
+            margin-right: 2%;
+            width: 98%;
+            color: #F2BD1D;
+            text-align: center;
+            transition:all .3s ease;
+        }
+
+        .list:hover {
+      background-color: #F2BD1D;
+      color: white;
+    }
+
+
+        h1 {
+            font-size: 50px;
+        }
+
+        #title {
+            color: #F2BD1D;
+            text-align: center;
+            margin: 10px;
+        }
+
+        #title .tl {
+            border-bottom: 2px solid;
+            margin: 13px;
+            padding-bottom: 10px;
+        }
+
+        .progressbar { 
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10px;
+            z-index: 500;
+        }
+        .progress {
+            width: 0%; 
+            height: 100%;
+            background-color: #F2BD1D;
+            transition: width 0.3s; }
+
+
+    </style>
+    <div id="progressbar" class="progressbar">
+                <div class="progress"></div>
+            </div>
+    </div>
+
+    <div id = "title">
+        <h1 id = "under"> <span id = "use">부산시 맛집 메뉴 리스트 </span></h1>
+        <h3 class ="tl"> 식당이름 - 메뉴카테고리대분류명-메뉴이름 </h3>
+        <button class="button button--winona" data-text="+ 10개 " id="next">
+        <span>+메뉴추가하기</span></button>
+    </div>
+    
+    <script> 
+        // FetchAPI 와 async/await 통해서 부산관광공사 음식테마 거리API 사용
+            // 1)[음식이미지정보] 상세기능 명세를 통해 이미지를 1개를 출력하세요
+    
+            // 작성한 함수 안에서, FetchAPI 와 async/await 통해서 
+            // 9)[한국어메뉴설명정보] 상세기능 명세를 통해서 메뉴 아이디와 메뉴 이름 1개를 출력하세요
+            //  1)받아온 메뉴아이디와 9)에서 받아온 메뉴 아이디를 비교해서 
+            //  아이디의 값이 같다면 이름을 출력해주세요
+    
+            async function foodImageGet( nextCount ) {
+                           
+    
+                const response = await fetch('./공공데이터.json');
+    
+                let data =0; 
+                if (response.ok) {
+                    data = await response.json();
+                    console.log(data);
+                    console.log(data.body[0].RSTR_NM)
+                    console.log(data.body[0].MENU_CTGRY_LCLAS_NM)
+                    console.log(data.body[0].MENU_CTGRY_SCLAS_NM)
+                    console.log(data.body[0].MENU_NM)
+                    console.log(data.body[0].AREA_NM)
+
+                }
+    
+                // 메뉴아이디와 메뉴 이름 (한국어)
+                const MenuResponse = await fetch('./공공데이터.json')
+                
+    
+                 // 가져온 값을 문서객체(DOM)을 만들어서 추가하기
+                // API로 가져올수 없으므로 임의의 값을 변수에 넣어서 작성
+                const dRSTR_NM = data.body[0].RSTR_NM;
+                const dMENU_CTGRY_LCLAS_NM = data.body[0].MENU_CTGRY_LCLAS_NM;
+                const dMENU_CTGRY_SCLAS_NM = data.body[0].MENU_CTGRY_SCLAS_NM;
+                const dMENU_NM = data.body[0].MENU_NM;
+                const dAREA_NM = data.body[0].AREA_NM;
+                
+                
+                function menuTag (dRSTR_NM, dMENU_CTGRY_LCLAS_NM, dMENU_CTGRY_SCLAS_NM,dMENU_NM,dAREA_NM){
+                    // DOM 요소 만들어서 추가하기.
+                    const tagmenuTagh1 = document.createElement("h1")
+                    tagmenuTagh1.innerHTML = dRSTR_NM;
+                    const tagmenuTagh3 = document.createElement("h3")
+                    tagmenuTagh3.innerHTML = dMENU_CTGRY_LCLAS_NM+"-"+dMENU_CTGRY_SCLAS_NM+"/"+dMENU_NM;
+                    const tagmenuTagP1 = document.createElement("p")
+                    tagmenuTagP1.innerHTML = dAREA_NM;
+
+    
+                    const menuBox = document.createElement("div");
+                    menuBox.append(tagmenuTagh1);
+                    menuBox.append(tagmenuTagh3);
+                    menuBox.append(tagmenuTagP1);
+                    menuBox.classList.add("list");
+    
+                    document.querySelector("body").append(menuBox)
+                }
+    
+                // 메뉴 아이디와 이름이 같은지 확인하지 않고 출력
+                for(let i = nextCount; i <nextCount+5 ; i++) {
+                let count = 0;
+                for(let j = i ; j<1000 ;i++) {
+                    if (data.body[j].RSTR_ID == data.body[i].RSTR_ID) {
+                        count = j;
+                        break;
+                    }
+                }
+                menuTag(data.body[i].RSTR_NM,
+                        data.body[count].MENU_CTGRY_LCLAS_NM,
+                        data.body[count].MENU_CTGRY_SCLAS_NM,
+                        data.body[count].MENU_NM,
+                        data.body[count].AREA_NM);
+            }
+
+            }
+            foodImageGet(0);
+    
+            let nextCount = 0;
+            const button = document.querySelector("#next")
+            button.addEventListener("click", ()=> {
+                nextCount += 5;
+                foodImageGet(nextCount)
+            })
+
+            // 프로그래스바
+            window.addEventListener("DOMContentLoaded", function(){
+            window.addEventListener("scroll", function(){
+                // 프로그래스 바가 있다면 실행할 수 있도록
+                if( document.querySelector(".progressbar") != null) {
+                    // 프로그래스바 세팅함수 실행
+                    setProgress();
+                }
+            })
+        })
+
+        // progress의 width를 스크롤 길이에 따라서 수정
+        function setProgress(){
+            // 스크롤한 높이
+            let curreY = document.documentElement.scrollTop;
+            console.log(curreY);
+            // 전체 높이
+            let totalY = document.documentElement.scrollHeight-document.documentElement.clientHeight;
+            console.log(totalY);
+
+            // 퍼센트로 바꿔서 progress css의width값에 넣어주기
+            let percentage = (curreY/totalY)*100;
+            document.querySelector(".progress").style.width= percentage+"%";
+        }
+        
+        </script>
+<style>
+
+    .button {
+      font-family: 'Hi Melody', cursive;
+      min-width: 150px;
+      max-width: 250px;
+      font-size: 20px;
+      font-weight:900;
+      margin: 1em;
+      padding: 1em 2em;
+      color: inherit;
+      text-align: middle;
+      position: relative;
+      z-index: 1;
+      border-radius: 10px;
+      border: 3px solid;
+    }
+    .button:focus {
+      outline: none;
+    }
+    .button > span {
+      vertical-align: middle;
+    }
+    
+    
+    .button--winona {
+      overflow: hidden;
+      padding: 0;
+      -webkit-transition: border-color 0.3s, background-color 0.3s;
+      transition: border-color 0.3s, background-color 0.3s;
+      -webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+      transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+    }
+    .button--winona::after {
+      content: attr(data-text);
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      color: #fff;
+      -webkit-transform: translate3d(0, 25%, 0);
+      transform: translate3d(0, 25%, 0);
+    }
+    .button--winona > span {
+      display: block;
+    }
+    .button--winona {
+      color: #F2BD1D;
+    }
+
+    .button--winona::after,
+    .button--winona > span {
+      padding: 1em 2em;
+      -webkit-transition: -webkit-transform 0.3s, opacity 0.3s;
+      transition: transform 0.3s, opacity 0.3s;
+      -webkit-transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+      transition-timing-function: cubic-bezier(0.2, 1, 0.3, 1);
+    }
+    .button--winona:hover {
+      background-color: #F2BD1D;
+    }
+    
+    .button--winona:hover::after {
+      opacity: 100%;
+      -webkit-transform: translate3d(11%, 25%, 0);
+      transform: translate3d(-17%, -4%, 0);
+    }
+    .button--winona:hover > span {
+      opacity: 0;
+      -webkit-transform: translate3d(0, 25%, 0);
+      transform: translate3d(0, 25%, 0);
+    }
+
+
+
+#under:hover { color:#39d9c8; transition:all .3s ease }
+#under > #use { position:relative }
+
+/*밑줄넣기 부분*/
+#under > #use::after {
+  content: '';
+  width: 0%;
+  left: -10%;
+  height: 1px;
+  display: block;
+  margin-top: 3px;
+  border-bottom: 2px soild #39d9c8;
+  transition:all .3s ease;
+}
+#under:hover > #use::after {
+
+  margin-top: 3px;
+  border-bottom: 2px soild #39d9c8;
+  transition:all .3s ease;
+}
+    
+    </style>
+</body>
+</html>
